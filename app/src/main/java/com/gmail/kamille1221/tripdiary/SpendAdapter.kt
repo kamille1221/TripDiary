@@ -32,7 +32,7 @@ import java.util.*
 /**
  * Created by Kamille on 2018-06-14.
  **/
-class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, private var realm: Realm, autoUpdate: Boolean = true): RealmRecyclerViewAdapter<Spend, RecyclerView.ViewHolder>(mContext, mSpends as OrderedRealmCollection<Spend>?, autoUpdate) {
+class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, private var realm: Realm, private val callback: RefreshTotalSpends, autoUpdate: Boolean = true): RealmRecyclerViewAdapter<Spend, RecyclerView.ViewHolder>(mContext, mSpends as OrderedRealmCollection<Spend>?, autoUpdate) {
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		val spend: Spend? = mSpends[position]
 		if (spend != null) {
@@ -136,6 +136,7 @@ class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, 
 				} else {
 					updateRealm(spend.id, title, content, date, currency, price, spend.lat, spend.lng)
 					dialog.dismiss()
+					callback.refreshTotalSpends(date)
 				}
 			}
 			val neutralButton: Button = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL)
@@ -149,6 +150,7 @@ class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, 
 					deleteResult.deleteAllFromRealm()
 					realm.commitTransaction()
 					alertDialog.dismiss()
+					callback.refreshTotalSpends(date)
 				})
 				deleteBuilder.setNegativeButton(context.getString(R.string.cancel), null)
 				deleteBuilder.create().show()
@@ -180,5 +182,9 @@ class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, 
 			itemView.tvPrice.text = String.format(Locale.getDefault(), "%s %s", SpendUtils.priceIntToString(spend.price), spend.currency)
 			itemView.tvDate.text = SpendUtils.dateLongToString(spend.date)
 		}
+	}
+
+	interface RefreshTotalSpends {
+		fun refreshTotalSpends(date: Long)
 	}
 }

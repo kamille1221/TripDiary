@@ -20,11 +20,11 @@ Thumbs.db
 *.iml
 .gradle/
 build/
-
-# Keys
-keys.xml
-fabric.properties
 .idea/
 libs/
 debug/
 release/
+
+# Keys
+keys.xml
+fabric.properties

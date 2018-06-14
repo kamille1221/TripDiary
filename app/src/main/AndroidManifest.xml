@@ -27,6 +27,9 @@
 		<activity android:name=".MapsActivity"/>
 
 		<meta-data
+			android:name="android.max_aspect"
+			android:value="2.1"/>
+		<meta-data
 			android:name="io.fabric.ApiKey"
 			android:value="2fcfacf2ba6033f216fd8c14039fa8a1b1c06656"/>
 		<meta-data

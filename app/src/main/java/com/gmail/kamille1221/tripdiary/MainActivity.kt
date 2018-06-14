@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -42,7 +43,11 @@ import kotlin.properties.Delegates
 /**
  * Created by Kamille on 2018-06-14.
  **/
-class MainActivity: AppCompatActivity() {
+class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
+	companion object {
+		const val REQUEST_CODE_ACCESS_FINE_LOCATION: Int = 0
+	}
+
 	private lateinit var mAdapter: SpendAdapter
 	private var realm: Realm by Delegates.notNull()
 	private var realmConfig: RealmConfiguration by Delegates.notNull()
@@ -93,13 +98,26 @@ class MainActivity: AppCompatActivity() {
 		}
 	}
 
+	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+		when (requestCode) {
+			REQUEST_CODE_ACCESS_FINE_LOCATION -> {
+				if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				}
+			}
+		}
+	}
+
+	override fun refreshTotalSpends(date: Long) {
+		showTotalSpends(date)
+	}
+
 	private fun refreshSpends(date: Long) {
 		val spends: RealmResults<Spend> = if (date < 0L) {
 			getSpends()
 		} else {
 			getSpends(date)
 		}
-		mAdapter = SpendAdapter(this, spends, realm)
+		mAdapter = SpendAdapter(this, spends, realm, this)
 		mAdapter.notifyDataSetChanged()
 		rvSpends.adapter = mAdapter
 		showTotalSpends(date)
@@ -167,13 +185,16 @@ class MainActivity: AppCompatActivity() {
 	}
 
 	private fun addSpend() {
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_ACCESS_FINE_LOCATION)
+		}
 		val resource: Int = R.layout.dialog_add_spend
 		val view = this.layoutInflater.inflate(resource, null)
 		val builder = AlertDialog.Builder(this)
 		var date: Long = selectedDate
 		var currency: Int = SpendUtils.getLastCurrency(this)
-		var lat: Double
-		var lng: Double
+		var lat: Double = SpendUtils.DEFAULT_LAT
+		var lng: Double = SpendUtils.DEFAULT_LNG
 		builder.setTitle(getString(R.string.title_new_spend))
 		builder.setView(view)
 		builder.setPositiveButton(getString(R.string.save), null)
@@ -204,20 +225,20 @@ class MainActivity: AppCompatActivity() {
 			}
 		}
 
-		val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-		val location: Location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-		lat = location.latitude
-		lng = location.longitude
 		MapsInitializer.initialize(this)
 		view.mvLocation.onCreate(null)
 		view.mvLocation.onResume()
 		view.mvLocation.getMapAsync { googleMap ->
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 15f))
 			val uiSettings: UiSettings = googleMap.uiSettings
 			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+				val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+				val location: Location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+				lat = location.latitude
+				lng = location.longitude
 				googleMap.isMyLocationEnabled = true
 				uiSettings.isMyLocationButtonEnabled = true
 			}
+			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 15f))
 			uiSettings.isMapToolbarEnabled = false
 			uiSettings.isRotateGesturesEnabled = false
 			uiSettings.isTiltGesturesEnabled = false

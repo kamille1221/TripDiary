@@ -1,7 +1,12 @@
 package com.gmail.kamille1221.tripdiary
 
+import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
@@ -25,11 +30,13 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback {
 	private lateinit var mMap: GoogleMap
 	private var realm: Realm by Delegates.notNull()
 	private var realmConfig: RealmConfiguration by Delegates.notNull()
+	private lateinit var mapFragment: SupportMapFragment
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_maps)
-		val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+
+		mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 		mapFragment.getMapAsync(this)
 
 		initRealm()
@@ -44,8 +51,13 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback {
 
 	override fun onMapReady(googleMap: GoogleMap) {
 		mMap = googleMap
-		mMap.isMyLocationEnabled = true
 		val uiSettings: UiSettings = mMap.uiSettings
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), MainActivity.REQUEST_CODE_ACCESS_FINE_LOCATION)
+		} else {
+			mMap.isMyLocationEnabled = true
+			uiSettings.isMyLocationButtonEnabled = true
+		}
 		uiSettings.isMapToolbarEnabled = false
 		uiSettings.isRotateGesturesEnabled = false
 		uiSettings.isTiltGesturesEnabled = false
@@ -77,7 +89,13 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback {
 				mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(markers[0].position.latitude, markers[0].position.longitude), 15f))
 			}
 			else -> {
-				mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(SpendUtils.DEFAULT_LAT, SpendUtils.DEFAULT_LNG), 15f))
+				if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+					mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(SpendUtils.DEFAULT_LAT, SpendUtils.DEFAULT_LNG), 15f))
+				} else {
+					val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+					val location: Location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+					mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 15f))
+				}
 			}
 		}
 	}
@@ -90,6 +108,16 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback {
 			}
 		}
 		return false
+	}
+
+	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+		when (requestCode) {
+			MainActivity.REQUEST_CODE_ACCESS_FINE_LOCATION -> {
+				if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					mapFragment.getMapAsync(this)
+				}
+			}
+		}
 	}
 
 	private fun initRealm() {
