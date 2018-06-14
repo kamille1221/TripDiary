@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="currency">
+		<item>KRW</item>
+		<item>USD</item>
+		<item>JPY</item>
+		<item>EUR</item>
+		<item>GBP</item>
+		<item>TWD</item>
+	</string-array>
+</resources>

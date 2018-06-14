@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">여행 일기</string>
+	<string name="action_settings">설정</string>
+	<string name="about">정보</string>
+	<string name="title">제목</string>
+	<string name="content">내용</string>
+	<string name="date">지출일시</string>
+	<string name="price">금액</string>
+	<string name="currency">통화</string>
+	<string name="save">저장</string>
+	<string name="delete">삭제</string>
+	<string name="cancel">취소</string>
+	<string name="version">버전 </string>
+	<string name="update">업데이트</string>
+	<string name="backup">백업</string>
+	<string name="restore">복원</string>
+	<string name="total">총</string>
+	<string name="history_map">지출 장소</string>
+	<string name="open_source_license"><u>오픈 소스 라이선스</u></string>
+
+	<string name="title_new_spend">지출 추가</string>
+	<string name="title_modify_spend">지출 수정</string>
+	<string name="title_delete_spend">지출 삭제</string>
+	<string name="message_delete_spend">지출 항목을 삭제하시겠습니까?</string>
+
+	<string name="toast_empty_title_or_price">지출 항목의 제목과 금액을 입력해주세요 :(</string>
+</resources>

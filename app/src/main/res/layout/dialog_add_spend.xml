@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:paddingEnd="24dp"
+	android:paddingStart="24dp"
+	android:paddingTop="12dp">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<EditText
+				android:id="@+id/etTitle"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/title"
+				android:inputType="text"
+				android:maxLength="20"
+				android:maxLines="1"
+				android:textColor="@color/textColorPrimary"
+				android:textSize="18sp"/>
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilContent"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<EditText
+				android:id="@+id/etContent"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/content"
+				android:inputType="textMultiLine"
+				android:textColor="@color/textColorPrimary"
+				android:textSize="14sp"/>
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilDate"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<EditText
+				android:id="@+id/etDate"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:focusableInTouchMode="false"
+				android:hint="@string/date"
+				android:inputType="date"
+				android:textColor="@color/textColorPrimary"
+				android:textSize="14sp"/>
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilPrice"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<EditText
+				android:id="@+id/etPrice"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@string/price"
+				android:inputType="numberDecimal"
+				android:textColor="@color/textColorPrimary"
+				android:textSize="14sp"/>
+		</android.support.design.widget.TextInputLayout>
+
+		<Spinner
+			android:id="@+id/spnCurrency"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+	</LinearLayout>
+
+	<com.google.android.gms.maps.MapView
+		android:id="@+id/mvLocation"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"/>
+</LinearLayout>
