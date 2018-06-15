@@ -3,6 +3,48 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".MainActivity">
 	<item
+		android:id="@+id/action_currency"
+		android:orderInCategory="100"
+		android:title="@string/currency"
+		app:showAsAction="never">
+		<menu>
+			<group
+				android:id="@+id/group_currency"
+				android:checkableBehavior="single">
+				<item
+					android:id="@+id/currency_krw"
+					android:orderInCategory="200"
+					android:title="@string/krw"
+					app:showAsAction="never"/>
+				<item
+					android:id="@+id/currency_usd"
+					android:orderInCategory="200"
+					android:title="@string/usd"
+					app:showAsAction="never"/>
+				<item
+					android:id="@+id/currency_jpy"
+					android:orderInCategory="200"
+					android:title="@string/jpy"
+					app:showAsAction="never"/>
+				<item
+					android:id="@+id/currency_eur"
+					android:orderInCategory="200"
+					android:title="@string/eur"
+					app:showAsAction="never"/>
+				<item
+					android:id="@+id/currency_gbp"
+					android:orderInCategory="200"
+					android:title="@string/gbp"
+					app:showAsAction="never"/>
+				<item
+					android:id="@+id/currency_twd"
+					android:orderInCategory="200"
+					android:title="@string/twd"
+					app:showAsAction="never"/>
+			</group>
+		</menu>
+	</item>
+	<item
 		android:id="@+id/action_map"
 		android:orderInCategory="100"
 		android:title="@string/history_map"

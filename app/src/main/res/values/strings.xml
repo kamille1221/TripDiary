@@ -17,6 +17,12 @@
 	<string name="restore">Restore</string>
 	<string name="total">Total</string>
 	<string name="history_map">History Map</string>
+	<string name="krw">KRW</string>
+	<string name="usd">USD</string>
+	<string name="jpy">JPY</string>
+	<string name="eur">EUR</string>
+	<string name="gbp">GBP</string>
+	<string name="twd">TWD</string>
 	<string name="open_source_license"><u>OpenSource License</u></string>
 
 	<string name="title_new_spend">new Spend</string>

@@ -80,6 +80,14 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 
 	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 		menuInflater.inflate(R.menu.menu_main, menu)
+		when (SpendUtils.getLastCurrency(this)) {
+			0 -> menu?.findItem(R.id.currency_krw)?.isChecked = true
+			1 -> menu?.findItem(R.id.currency_usd)?.isChecked = true
+			2 -> menu?.findItem(R.id.currency_jpy)?.isChecked = true
+			3 -> menu?.findItem(R.id.currency_eur)?.isChecked = true
+			4 -> menu?.findItem(R.id.currency_gbp)?.isChecked = true
+			5 -> menu?.findItem(R.id.currency_twd)?.isChecked = true
+		}
 		return true
 	}
 
@@ -93,8 +101,44 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 				startActivity(Intent(this, AboutActivity::class.java))
 				true
 			}
-			else ->
+			R.id.currency_krw -> {
+				SpendUtils.setLastCurrency(this, 0)
+				item.isChecked = true
+				true
+			}
+
+			R.id.currency_usd -> {
+				SpendUtils.setLastCurrency(this, 1)
+				item.isChecked = true
+				true
+			}
+
+			R.id.currency_jpy -> {
+				SpendUtils.setLastCurrency(this, 2)
+				item.isChecked = true
+				true
+			}
+
+			R.id.currency_eur -> {
+				SpendUtils.setLastCurrency(this, 3)
+				item.isChecked = true
+				true
+			}
+
+			R.id.currency_gbp -> {
+				SpendUtils.setLastCurrency(this, 4)
+				item.isChecked = true
+				true
+			}
+
+			R.id.currency_twd -> {
+				SpendUtils.setLastCurrency(this, 5)
+				item.isChecked = true
+				true
+			}
+			else -> {
 				super.onOptionsItemSelected(item)
+			}
 		}
 	}
 
@@ -125,20 +169,21 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 
 	private fun showTotalSpends(date: Long) {
 		var millis: Long = date
-		var total = 0
-		var currency = ""
+		var dailyTotal = 0
+		val monthlyTotal: Int = getMonthlySpends(date)
+		var currency: String = SpendUtils.currencyPositionToString(this, SpendUtils.getLastCurrency(this))
 		if (millis < 0L) {
 			millis = System.currentTimeMillis()
 		}
 		getSpends(millis).forEach {
-			total += it.price
+			dailyTotal += it.price
 			currency = it.currency
 		}
-		if (total <= 0) {
+		if (dailyTotal <= 0 && monthlyTotal <= 0) {
 			tvTotalSpends.visibility = View.GONE
 		} else {
 			tvTotalSpends.visibility = View.VISIBLE
-			tvTotalSpends.text = String.format(Locale.getDefault(), "%s %s %s", getString(R.string.total), SpendUtils.priceIntToString(total), currency)
+			tvTotalSpends.text = String.format(Locale.getDefault(), "%s %s / %s %s", getString(R.string.total), SpendUtils.priceIntToString(dailyTotal), SpendUtils.priceIntToString(monthlyTotal), currency)
 		}
 	}
 
@@ -155,7 +200,25 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 		startMillis.set(Calendar.SECOND, 0)
 		startMillis.set(Calendar.MILLISECOND, 0)
 		endMillis.timeInMillis = startMillis.timeInMillis + 86400000 // 1000ms * 60s * 60m * 24h
-		return realm.where(Spend::class.java).greaterThanOrEqualTo("date", startMillis.timeInMillis).lessThanOrEqualTo("date", endMillis.timeInMillis).findAll().sort("date", Sort.ASCENDING)
+		return realm.where(Spend::class.java).greaterThanOrEqualTo("date", startMillis.timeInMillis).lessThan("date", endMillis.timeInMillis).findAll().sort("date", Sort.ASCENDING)
+	}
+
+	private fun getMonthlySpends(date: Long): Int {
+		val startMillis: Calendar = Calendar.getInstance()
+		val endMillis: Calendar = Calendar.getInstance()
+		var result = 0
+		startMillis.timeInMillis = date
+		startMillis.set(Calendar.DAY_OF_MONTH, 1)
+		startMillis.set(Calendar.HOUR_OF_DAY, 0)
+		startMillis.set(Calendar.MINUTE, 0)
+		startMillis.set(Calendar.SECOND, 0)
+		startMillis.set(Calendar.MILLISECOND, 0)
+		endMillis.timeInMillis = startMillis.timeInMillis
+		endMillis.add(Calendar.DAY_OF_MONTH, endMillis.getActualMaximum(Calendar.DAY_OF_MONTH))
+		realm.where(Spend::class.java).greaterThanOrEqualTo("date", startMillis.timeInMillis).lessThan("date", endMillis.timeInMillis).findAll().sort("date", Sort.ASCENDING).forEach {
+			result += it.price
+		}
+		return result
 	}
 
 	private fun initRealm() {
