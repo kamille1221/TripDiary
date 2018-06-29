@@ -3,15 +3,16 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:paddingEnd="24dp"
-	android:paddingStart="24dp"
-	android:paddingTop="12dp">
+	android:orientation="vertical">
 
 	<LinearLayout
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical">
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:orientation="vertical"
+		android:paddingEnd="16dp"
+		android:paddingStart="16dp"
+		android:paddingTop="16dp">
 
 		<android.support.design.widget.TextInputLayout
 			android:id="@+id/tilTitle"
@@ -78,6 +79,7 @@
 					android:layout_height="wrap_content"
 					android:hint="@string/price"
 					android:inputType="numberDecimal"
+					android:maxLength="9"
 					android:textColor="@color/textColorPrimary"
 					android:textSize="14sp"/>
 			</android.support.design.widget.TextInputLayout>
@@ -89,11 +91,49 @@
 				android:layout_gravity="center_vertical|end"
 				android:gravity="center_vertical|end"/>
 		</LinearLayout>
+
+		<android.support.v7.widget.RecyclerView
+			android:id="@+id/rvPhotos"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"/>
+
+		<com.google.android.gms.maps.MapView
+			android:id="@+id/mvLocation"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"/>
 	</LinearLayout>
 
-	<com.google.android.gms.maps.MapView
-		android:id="@+id/mvLocation"
+	<LinearLayout
 		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"/>
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<Button
+			android:id="@+id/btnDelete"
+			style="@style/Widget.AppCompat.Button.Borderless.Colored"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/delete"
+			android:visibility="gone"/>
+
+		<View
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"/>
+
+		<Button
+			android:id="@+id/btnCancel"
+			style="@style/Widget.AppCompat.Button.Borderless.Colored"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/cancel"/>
+
+		<Button
+			android:id="@+id/btnSave"
+			style="@style/Widget.AppCompat.Button.Borderless.Colored"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/save"/>
+	</LinearLayout>
 </LinearLayout>

@@ -28,3 +28,4 @@ release/
 # Keys
 keys.xml
 fabric.properties
+app/google-services.json

@@ -12,8 +12,9 @@ android {
 		applicationId "com.gmail.kamille1221.tripdiary"
 		minSdkVersion 23
 		targetSdkVersion 27
-		versionCode 3
-		versionName "0.3"
+		vectorDrawables.useSupportLibrary = true
+		versionCode 4
+		versionName "0.4"
 	}
 	buildTypes {
 		release {
@@ -36,4 +37,11 @@ dependencies {
 	}
 	implementation "com.google.android.gms:play-services-oss-licenses:$gms_version"
 	implementation "com.google.android.gms:play-services-maps:$gms_version"
+	implementation 'com.github.bumptech.glide:glide:4.7.1'
+	annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+	implementation 'com.google.firebase:firebase-core:16.0.1'
+	implementation 'com.google.firebase:firebase-storage:16.0.1'
+	implementation 'com.google.firebase:firebase-auth:16.0.2'
 }
+
+apply plugin: 'com.google.gms.google-services'

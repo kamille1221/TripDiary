@@ -10,6 +10,7 @@
 	<string name="currency">Currency</string>
 	<string name="save">Save</string>
 	<string name="delete">Delete</string>
+	<string name="confirm">Confirm</string>
 	<string name="cancel">Cancel</string>
 	<string name="version">Version </string>
 	<string name="update">Update</string>
@@ -17,18 +18,27 @@
 	<string name="restore">Restore</string>
 	<string name="total">Total</string>
 	<string name="history_map">History Map</string>
-	<string name="krw">KRW</string>
-	<string name="usd">USD</string>
-	<string name="jpy">JPY</string>
-	<string name="eur">EUR</string>
-	<string name="gbp">GBP</string>
-	<string name="twd">TWD</string>
 	<string name="open_source_license"><u>OpenSource License</u></string>
 
 	<string name="title_new_spend">new Spend</string>
 	<string name="title_modify_spend">modify Spend</string>
 	<string name="title_delete_spend">delete Spend</string>
 	<string name="message_delete_spend">Are you sure you want to delete your spend?</string>
+	<string name="title_delete_photo">delete Photo</string>
+	<string name="message_delete_photo">Are you sure you want to delete your photo?</string>
 
 	<string name="toast_empty_title_or_price">You must input a title and price :(</string>
+	<string name="toast_max_photos">You can add up to 5 photos</string>
+	<string name="toast_photo_upload_failed">Upload is failed</string>
+	<string name="photo">Photo</string>
+	<string name="title_photo_upload">Photo Upload</string>
+	<string name="text_photo_upload">Upload in progress</string>
+	<string name="text_photo_upload_complete">Upload complete</string>
+
+	<string name="krw">KRW</string>
+	<string name="usd">USD</string>
+	<string name="jpy">JPY</string>
+	<string name="eur">EUR</string>
+	<string name="gbp">GBP</string>
+	<string name="twd">TWD</string>
 </resources>

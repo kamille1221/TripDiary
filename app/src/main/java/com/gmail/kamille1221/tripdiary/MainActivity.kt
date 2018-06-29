@@ -1,33 +1,16 @@
 package com.gmail.kamille1221.tripdiary
 
-import android.Manifest
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
-import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Toast
 import com.crashlytics.android.Crashlytics
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.UiSettings
-import com.google.android.gms.maps.model.LatLng
+import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_ADD_SPEND
+import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_MODIFY_SPEND
 import io.fabric.sdk.android.Fabric
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -36,7 +19,6 @@ import io.realm.Sort
 import io.realm.exceptions.RealmMigrationNeededException
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.dialog_add_spend.view.*
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -44,10 +26,6 @@ import kotlin.properties.Delegates
  * Created by Kamille on 2018-06-14.
  **/
 class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
-	companion object {
-		const val REQUEST_CODE_ACCESS_FINE_LOCATION: Int = 0
-	}
-
 	private lateinit var mAdapter: SpendAdapter
 	private var realm: Realm by Delegates.notNull()
 	private var realmConfig: RealmConfiguration by Delegates.notNull()
@@ -72,10 +50,22 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 
 		rvSpends.setHasFixedSize(true)
 		rvSpends.layoutManager = LinearLayoutManager(this)
-		refreshSpends(System.currentTimeMillis())
-		showTotalSpends(System.currentTimeMillis())
 
 		fabAdd.setOnClickListener { addSpend() }
+	}
+
+	override fun onResume() {
+		super.onResume()
+		refreshSpends(selectedDate)
+		showTotalSpends(selectedDate)
+	}
+
+	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+		if (resultCode == RESULT_OK) {
+			when (requestCode) {
+				REQUEST_CODE_ADD_SPEND, REQUEST_CODE_MODIFY_SPEND -> refreshSpends(selectedDate)
+			}
+		}
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -138,15 +128,6 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 			}
 			else -> {
 				super.onOptionsItemSelected(item)
-			}
-		}
-	}
-
-	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-		when (requestCode) {
-			REQUEST_CODE_ACCESS_FINE_LOCATION -> {
-				if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				}
 			}
 		}
 	}
@@ -233,110 +214,7 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 		}
 	}
 
-	private fun commitRealm(title: String, content: String, date: Long, currency: String, price: Int, lat: Double, lng: Double) {
-		realm.beginTransaction()
-		val id: Int = realm.where(Spend::class.java).max("id")?.toInt() ?: 1
-		val spend = realm.createObject(Spend::class.java, id + 1)
-		spend.title = title
-		spend.content = content
-		spend.date = date
-		spend.currency = currency
-		spend.price = price
-		spend.lat = lat
-		spend.lng = lng
-		realm.commitTransaction()
-	}
-
 	private fun addSpend() {
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_ACCESS_FINE_LOCATION)
-		}
-		val resource: Int = R.layout.dialog_add_spend
-		val view = this.layoutInflater.inflate(resource, null)
-		val builder = AlertDialog.Builder(this)
-		var date: Long = selectedDate
-		var currency: Int = SpendUtils.getLastCurrency(this)
-		var lat: Double = SpendUtils.DEFAULT_LAT
-		var lng: Double = SpendUtils.DEFAULT_LNG
-		builder.setTitle(getString(R.string.title_new_spend))
-		builder.setView(view)
-		builder.setPositiveButton(getString(R.string.save), null)
-		builder.setNegativeButton(getString(R.string.cancel), null)
-		view.etDate.setText(SpendUtils.dateLongToString(date))
-		view.etDate.setOnClickListener {
-			val calendar: Calendar = Calendar.getInstance()
-			calendar.timeInMillis = date
-			val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-				val timePickerDialog = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-					calendar.set(year, month, dayOfMonth, hourOfDay, minute)
-					date = calendar.timeInMillis
-					view.etDate.setText(SpendUtils.dateLongToString(date))
-				}, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false)
-				timePickerDialog.show()
-			}, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-			datePickerDialog.show()
-		}
-		view.spnCurrency.adapter = ArrayAdapter.createFromResource(this, R.array.currency, R.layout.spinner_item)
-		view.spnCurrency.setSelection(currency)
-		view.spnCurrency.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-			override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-				currency = position
-				SpendUtils.setLastCurrency(this@MainActivity, position)
-			}
-
-			override fun onNothingSelected(parent: AdapterView<*>) {
-			}
-		}
-
-		MapsInitializer.initialize(this)
-		view.mvLocation.onCreate(null)
-		view.mvLocation.onResume()
-		view.mvLocation.getMapAsync { googleMap ->
-			val uiSettings: UiSettings = googleMap.uiSettings
-			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-				val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-				val location: Location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-				lat = location.latitude
-				lng = location.longitude
-				googleMap.isMyLocationEnabled = true
-				uiSettings.isMyLocationButtonEnabled = true
-			}
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 15f))
-			uiSettings.isMapToolbarEnabled = false
-			uiSettings.isRotateGesturesEnabled = false
-			uiSettings.isTiltGesturesEnabled = false
-			uiSettings.isZoomControlsEnabled = true
-			uiSettings.isZoomGesturesEnabled = false
-			googleMap.setOnCameraIdleListener {
-				lat = googleMap.cameraPosition.target.latitude
-				lng = googleMap.cameraPosition.target.longitude
-			}
-		}
-
-		val alertDialog: AlertDialog = builder.create()
-		alertDialog.setOnShowListener { dialog ->
-			val positiveButton: Button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-			positiveButton.setOnClickListener {
-				val title: String = view.etTitle.text.toString()
-				val content: String = view.etContent.text.toString()
-				val price: String = view.etPrice.text.toString()
-				when {
-					TextUtils.isEmpty(title) -> {
-						Toast.makeText(this, getString(R.string.toast_empty_title_or_price), Toast.LENGTH_SHORT).show()
-						view.etTitle.requestFocus()
-					}
-					TextUtils.isEmpty(price) -> {
-						Toast.makeText(this, getString(R.string.toast_empty_title_or_price), Toast.LENGTH_SHORT).show()
-						view.etPrice.requestFocus()
-					}
-					else -> {
-						commitRealm(title, content, date, SpendUtils.currencyPositionToString(this, currency), price.toInt(), lat, lng)
-						dialog.dismiss()
-						showTotalSpends(date)
-					}
-				}
-			}
-		}
-		alertDialog.show()
+		startActivityForResult(Intent(this, AddSpendActivity::class.java), REQUEST_CODE_ADD_SPEND)
 	}
 }

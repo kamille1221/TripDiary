@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_PERMISSION
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -42,18 +43,16 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback {
 		initRealm()
 
 		val actionBar: ActionBar? = supportActionBar
-		if (actionBar != null) {
-			actionBar.setTitle(R.string.history_map)
-			actionBar.setDisplayHomeAsUpEnabled(true)
-			actionBar.setHomeButtonEnabled(true)
-		}
+		actionBar?.setTitle(R.string.history_map)
+		actionBar?.setDisplayHomeAsUpEnabled(true)
+		actionBar?.setHomeButtonEnabled(true)
 	}
 
 	override fun onMapReady(googleMap: GoogleMap) {
 		mMap = googleMap
 		val uiSettings: UiSettings = mMap.uiSettings
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), MainActivity.REQUEST_CODE_ACCESS_FINE_LOCATION)
+			ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_PERMISSION)
 		} else {
 			mMap.isMyLocationEnabled = true
 			uiSettings.isMyLocationButtonEnabled = true
@@ -68,7 +67,7 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback {
 		getSpends().forEach {
 			val latLng = LatLng(it.lat, it.lng)
 			if (it.lat >= 0.0 && it.lng >= 0.0) {
-				markers.add(mMap.addMarker(MarkerOptions().position(latLng).title(it.title)))
+				markers.add(mMap.addMarker(MarkerOptions().position(latLng).title(it.title).snippet(SpendUtils.dateLongToString(it.date))))
 			}
 		}
 		if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -93,8 +92,17 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback {
 					mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(SpendUtils.DEFAULT_LAT, SpendUtils.DEFAULT_LNG), 15f))
 				} else {
 					val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-					val location: Location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-					mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 15f))
+					val providers: List<String> = locationManager.getProviders(true)
+					var location: Location? = null
+					providers.forEach {
+						val l = locationManager.getLastKnownLocation(it) ?: return@forEach
+						if (location == null || location!!.accuracy > l.accuracy) {
+							location = l
+						}
+					}
+					val lat = location?.latitude ?: SpendUtils.DEFAULT_LAT
+					val lng = location?.longitude ?: SpendUtils.DEFAULT_LNG
+					mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 15f))
 				}
 			}
 		}
@@ -112,7 +120,7 @@ class MapsActivity: AppCompatActivity(), OnMapReadyCallback {
 
 	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
 		when (requestCode) {
-			MainActivity.REQUEST_CODE_ACCESS_FINE_LOCATION -> {
+			REQUEST_CODE_PERMISSION -> {
 				if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 					mapFragment.getMapAsync(this)
 				}

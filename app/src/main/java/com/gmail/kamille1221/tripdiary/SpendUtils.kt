@@ -20,6 +20,12 @@ import java.util.*
  * Created by Kamille on 2018-06-14.
  **/
 object SpendUtils {
+	const val REQUEST_CODE_PERMISSION: Int = 1000
+	const val REQUEST_CODE_ADD_SPEND: Int = 1001
+	const val REQUEST_CODE_MODIFY_SPEND: Int = 1002
+	const val REQUEST_CODE_EXTERNAL_STORAGE: Int = 1003
+	const val REQUEST_CODE_PICK_IMAGE: Int = 1004
+	const val CHANNEL_ID_UPLOAD: String = "uploadPhoto"
 	const val DEFAULT_LAT: Double = 37.514530
 	const val DEFAULT_LNG: Double = 127.106545
 	private const val PREFERENCE_NAME: String = "com.gmail.kamille1221.tripdiary"
