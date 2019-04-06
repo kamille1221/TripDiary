@@ -34,11 +34,14 @@
 	<string name="title_photo_upload">Photo Upload</string>
 	<string name="text_photo_upload">Upload in progress</string>
 	<string name="text_photo_upload_complete">Upload complete</string>
+	<string name="email">Email address</string>
+	<string name="toast_empty_email">Email address is empty :(</string>
+	<string name="toast_backup_complete">Backup complete :)</string>
 
-	<string name="krw">KRW</string>
-	<string name="usd">USD</string>
-	<string name="jpy">JPY</string>
-	<string name="eur">EUR</string>
-	<string name="gbp">GBP</string>
-	<string name="twd">TWD</string>
+	<string name="krw" translatable="false">KRW</string>
+	<string name="usd" translatable="false">USD</string>
+	<string name="jpy" translatable="false">JPY</string>
+	<string name="eur" translatable="false">EUR</string>
+	<string name="gbp" translatable="false">GBP</string>
+	<string name="twd" translatable="false">TWD</string>
 </resources>

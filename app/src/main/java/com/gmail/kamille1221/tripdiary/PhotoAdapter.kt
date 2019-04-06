@@ -28,7 +28,7 @@ import java.util.*
 /**
  * Created by Kamille on 2018-06-27.
  **/
-class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<String>, private val mHeight: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<String>, private val mHeight: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 	companion object {
 		private const val TYPE_HEADER: Int = 0
 	}
@@ -65,10 +65,10 @@ class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<
 					Toast.makeText(context, context.getString(R.string.toast_max_photos), Toast.LENGTH_SHORT).show()
 					return@setOnClickListener
 				} else {
-					if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+					if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 						(context as Activity).startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), REQUEST_CODE_PICK_IMAGE)
 					} else {
-						ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_EXTERNAL_STORAGE)
+						ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_EXTERNAL_STORAGE)
 						return@setOnClickListener
 					}
 				}
@@ -120,16 +120,20 @@ class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<
 
 	fun onActivityResult(data: Intent?) {
 		if (data != null) {
-			val uri: Uri = data.data
-			val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-			val cursor: Cursor = context.contentResolver.query(uri, filePathColumn, null, null, null)
-			cursor.moveToFirst()
-			val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
-			val photoPath: String = cursor.getString(columnIndex)
-			mPhotos.add(photoPath)
-			uploadList.add(photoPath)
-			notifyDataSetChanged()
-			cursor.close()
+			val uri: Uri? = data.data
+			if (uri != null) {
+				val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
+				val cursor: Cursor? = context.contentResolver.query(uri, filePathColumn, null, null, null)
+				if (cursor != null) {
+					cursor.moveToFirst()
+					val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
+					val photoPath: String = cursor.getString(columnIndex)
+					mPhotos.add(photoPath)
+					uploadList.add(photoPath)
+					notifyDataSetChanged()
+					cursor.close()
+				}
+			}
 		}
 	}
 
@@ -137,11 +141,11 @@ class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<
 		(context as Activity).startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), REQUEST_CODE_PICK_IMAGE)
 	}
 
-	internal inner class HeaderHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+	internal inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 		var flAdd: FrameLayout = itemView.findViewById(R.id.flAdd)
 	}
 
-	internal inner class PhotoHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+	internal inner class PhotoHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 		var ivPhoto: AppCompatImageView = itemView.findViewById(R.id.ivPhoto)
 	}
 }

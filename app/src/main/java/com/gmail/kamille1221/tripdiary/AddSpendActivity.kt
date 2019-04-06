@@ -47,7 +47,7 @@ import kotlin.properties.Delegates
 /**
  * Created by Kamille on 2018-06-27.
  **/
-class AddSpendActivity: AppCompatActivity() {
+class AddSpendActivity : AppCompatActivity() {
 	private var realm: Realm by Delegates.notNull()
 	private var realmConfig: RealmConfiguration by Delegates.notNull()
 	private var id: Int = -1
@@ -66,8 +66,8 @@ class AddSpendActivity: AppCompatActivity() {
 		initRealm()
 
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-				ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION)
+			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION)
 			} else {
 				ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_PERMISSION)
 			}
@@ -102,7 +102,7 @@ class AddSpendActivity: AppCompatActivity() {
 		}
 		spnCurrency.adapter = ArrayAdapter.createFromResource(this, R.array.currency, R.layout.spinner_item)
 		spnCurrency.setSelection(currency)
-		spnCurrency.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+		spnCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 			override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
 				currency = position
 				SpendUtils.setLastCurrency(this@AddSpendActivity, position)
@@ -229,13 +229,13 @@ class AddSpendActivity: AppCompatActivity() {
 			etContent.setText(bundle.getString("content"))
 			date = bundle.getLong("date")
 			etDate.setText(SpendUtils.dateLongToString(date))
-			currency = SpendUtils.currencyStringToPosition(this, bundle.getString("currency"))
+			currency = SpendUtils.currencyStringToPosition(this, bundle.getString("currency") ?: getString(R.string.krw))
 			spnCurrency.setSelection(currency)
 			etPrice.setText(bundle.getInt("price").toString())
 			lat = bundle.getDouble("lat")
 			lng = bundle.getDouble("lng")
 			val photos: RealmList<String> = RealmList()
-			bundle.getStringArrayList("photos").forEach {
+			bundle.getStringArrayList("photos")?.forEach {
 				photos.add(it)
 			}
 			rvPhotos.adapter = PhotoAdapter(this, photos, resources.displayMetrics.widthPixels / 5)
@@ -266,7 +266,7 @@ class AddSpendActivity: AppCompatActivity() {
 			if ((permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) || (permissions[1] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
 				mapAsync()
 			}
-		} else if (requestCode == REQUEST_CODE_EXTERNAL_STORAGE && permissions.isNotEmpty() && permissions[0] == Manifest.permission.READ_EXTERNAL_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+		} else if (requestCode == REQUEST_CODE_EXTERNAL_STORAGE && permissions.isNotEmpty() && permissions[0] == Manifest.permission.WRITE_EXTERNAL_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			(rvPhotos.adapter as PhotoAdapter).onRequestPermissionsResult()
 		} else {
 			super.onRequestPermissionsResult(requestCode, permissions, grantResults)
