@@ -7,7 +7,7 @@ import io.realm.annotations.PrimaryKey
 /**
  * Created by Kamille on 2018-06-14.
  **/
-open class Spend: RealmObject() {
+open class Spend : RealmObject() {
 	@PrimaryKey
 	open var id: Int = -1
 	open var title: String = ""

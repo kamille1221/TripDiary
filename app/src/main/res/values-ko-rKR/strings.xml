@@ -36,5 +36,6 @@
 	<string name="text_photo_upload_complete">사진 첨부 완료</string>
 	<string name="email">이메일 주소</string>
 	<string name="toast_empty_email">이메일 주소를 입력해주세요 :(</string>
-	<string name="toast_backup_complete">백업 완료</string>
+	<string name="toast_backup_complete">백업 완료 :)</string>
+	<string name="toast_backup_failed">백업 실패 :(</string>
 </resources>

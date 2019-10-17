@@ -9,15 +9,15 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
-import android.support.v4.app.ActivityCompat
-import android.support.v7.widget.AppCompatImageView
-import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_EXTERNAL_STORAGE
 import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_PICK_IMAGE
@@ -28,7 +28,11 @@ import java.util.*
 /**
  * Created by Kamille on 2018-06-27.
  **/
-class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<String>, private val mHeight: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PhotoAdapter(
+	private val context: Context,
+	private val mPhotos: RealmList<String>,
+	private val mHeight: Int
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 	companion object {
 		private const val TYPE_HEADER: Int = 0
 	}
@@ -62,13 +66,30 @@ class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<
 		if (holder is HeaderHolder) {
 			holder.flAdd.setOnClickListener {
 				if (mPhotos.size >= 5) {
-					Toast.makeText(context, context.getString(R.string.toast_max_photos), Toast.LENGTH_SHORT).show()
+					Toast.makeText(
+						context,
+						context.getString(R.string.toast_max_photos),
+						Toast.LENGTH_SHORT
+					).show()
 					return@setOnClickListener
 				} else {
-					if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-						(context as Activity).startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), REQUEST_CODE_PICK_IMAGE)
+					if (ActivityCompat.checkSelfPermission(
+							context,
+							Manifest.permission.WRITE_EXTERNAL_STORAGE
+						) == PackageManager.PERMISSION_GRANTED
+					) {
+						(context as Activity).startActivityForResult(
+							Intent(
+								Intent.ACTION_PICK,
+								MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+							), REQUEST_CODE_PICK_IMAGE
+						)
 					} else {
-						ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_EXTERNAL_STORAGE)
+						ActivityCompat.requestPermissions(
+							context as Activity,
+							arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+							REQUEST_CODE_EXTERNAL_STORAGE
+						)
 						return@setOnClickListener
 					}
 				}
@@ -122,8 +143,9 @@ class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<
 		if (data != null) {
 			val uri: Uri? = data.data
 			if (uri != null) {
-				val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-				val cursor: Cursor? = context.contentResolver.query(uri, filePathColumn, null, null, null)
+				val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media._ID)
+				val cursor: Cursor? =
+					context.contentResolver.query(uri, filePathColumn, null, null, null)
 				if (cursor != null) {
 					cursor.moveToFirst()
 					val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
@@ -138,7 +160,12 @@ class PhotoAdapter(private val context: Context, private val mPhotos: RealmList<
 	}
 
 	fun onRequestPermissionsResult() {
-		(context as Activity).startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), REQUEST_CODE_PICK_IMAGE)
+		(context as Activity).startActivityForResult(
+			Intent(
+				Intent.ACTION_PICK,
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+			), REQUEST_CODE_PICK_IMAGE
+		)
 	}
 
 	internal inner class HeaderHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -14,7 +14,7 @@
 		android:paddingStart="16dp"
 		android:paddingTop="16dp">
 
-		<android.support.design.widget.TextInputLayout
+		<com.google.android.material.textfield.TextInputLayout
 			android:id="@+id/tilTitle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
@@ -29,9 +29,9 @@
 				android:maxLines="1"
 				android:textColor="@color/textColorPrimary"
 				android:textSize="18sp"/>
-		</android.support.design.widget.TextInputLayout>
+		</com.google.android.material.textfield.TextInputLayout>
 
-		<android.support.design.widget.TextInputLayout
+		<com.google.android.material.textfield.TextInputLayout
 			android:id="@+id/tilContent"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
@@ -44,9 +44,9 @@
 				android:inputType="textMultiLine"
 				android:textColor="@color/textColorPrimary"
 				android:textSize="14sp"/>
-		</android.support.design.widget.TextInputLayout>
+		</com.google.android.material.textfield.TextInputLayout>
 
-		<android.support.design.widget.TextInputLayout
+		<com.google.android.material.textfield.TextInputLayout
 			android:id="@+id/tilDate"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
@@ -60,14 +60,14 @@
 				android:inputType="date"
 				android:textColor="@color/textColorPrimary"
 				android:textSize="14sp"/>
-		</android.support.design.widget.TextInputLayout>
+		</com.google.android.material.textfield.TextInputLayout>
 
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:id="@+id/tilPrice"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
 					android:maxLength="9"
 					android:textColor="@color/textColorPrimary"
 					android:textSize="14sp"/>
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<Spinner
 				android:id="@+id/spnCurrency"
@@ -92,7 +92,7 @@
 				android:gravity="center_vertical|end"/>
 		</LinearLayout>
 
-		<android.support.v7.widget.RecyclerView
+		<androidx.recyclerview.widget.RecyclerView
 			android:id="@+id/rvPhotos"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"

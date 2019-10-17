@@ -2,12 +2,12 @@ package com.gmail.kamille1221.tripdiary
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.crashlytics.android.Crashlytics
 import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_ADD_SPEND
 import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_MODIFY_SPEND
@@ -25,7 +25,7 @@ import kotlin.properties.Delegates
 /**
  * Created by Kamille on 2018-06-14.
  **/
-class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
+class MainActivity : AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 	private lateinit var mAdapter: SpendAdapter
 	private var realm: Realm by Delegates.notNull()
 	private var realmConfig: RealmConfiguration by Delegates.notNull()
@@ -66,6 +66,7 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 				REQUEST_CODE_ADD_SPEND, REQUEST_CODE_MODIFY_SPEND -> refreshSpends(selectedDate)
 			}
 		}
+		super.onActivityResult(requestCode, resultCode, data)
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -81,8 +82,8 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 		return true
 	}
 
-	override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-		return when (item?.itemId) {
+	override fun onOptionsItemSelected(item: MenuItem): Boolean {
+		return when (item.itemId) {
 			R.id.action_map -> {
 				startActivity(Intent(this, MapsActivity::class.java))
 				true
@@ -152,7 +153,8 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 		var millis: Long = date
 		var dailyTotal = 0
 		val monthlyTotal: Int = getMonthlySpends(date)
-		var currency: String = SpendUtils.currencyPositionToString(this, SpendUtils.getLastCurrency(this))
+		var currency: String =
+			SpendUtils.currencyPositionToString(this, SpendUtils.getLastCurrency(this))
 		if (millis < 0L) {
 			millis = System.currentTimeMillis()
 		}
@@ -164,7 +166,14 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 			tvTotalSpends.visibility = View.GONE
 		} else {
 			tvTotalSpends.visibility = View.VISIBLE
-			tvTotalSpends.text = String.format(Locale.getDefault(), "%s %s / %s %s", getString(R.string.total), SpendUtils.priceIntToString(dailyTotal), SpendUtils.priceIntToString(monthlyTotal), currency)
+			tvTotalSpends.text = String.format(
+				Locale.getDefault(),
+				"%s %s / %s %s",
+				getString(R.string.total),
+				SpendUtils.priceIntToString(dailyTotal),
+				SpendUtils.priceIntToString(monthlyTotal),
+				currency
+			)
 		}
 	}
 
@@ -181,7 +190,8 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 		startMillis.set(Calendar.SECOND, 0)
 		startMillis.set(Calendar.MILLISECOND, 0)
 		endMillis.timeInMillis = startMillis.timeInMillis + 86400000 // 1000ms * 60s * 60m * 24h
-		return realm.where(Spend::class.java).greaterThanOrEqualTo("date", startMillis.timeInMillis).lessThan("date", endMillis.timeInMillis).findAll().sort("date", Sort.ASCENDING)
+		return realm.where(Spend::class.java).greaterThanOrEqualTo("date", startMillis.timeInMillis)
+			.lessThan("date", endMillis.timeInMillis).findAll().sort("date", Sort.ASCENDING)
 	}
 
 	private fun getMonthlySpends(date: Long): Int {
@@ -196,9 +206,11 @@ class MainActivity: AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 		startMillis.set(Calendar.MILLISECOND, 0)
 		endMillis.timeInMillis = startMillis.timeInMillis
 		endMillis.add(Calendar.DAY_OF_MONTH, endMillis.getActualMaximum(Calendar.DAY_OF_MONTH))
-		realm.where(Spend::class.java).greaterThanOrEqualTo("date", startMillis.timeInMillis).lessThan("date", endMillis.timeInMillis).findAll().sort("date", Sort.ASCENDING).forEach {
-			result += it.price
-		}
+		realm.where(Spend::class.java).greaterThanOrEqualTo("date", startMillis.timeInMillis)
+			.lessThan("date", endMillis.timeInMillis).findAll().sort("date", Sort.ASCENDING)
+			.forEach {
+				result += it.price
+			}
 		return result
 	}
 

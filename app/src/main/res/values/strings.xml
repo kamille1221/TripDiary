@@ -37,6 +37,7 @@
 	<string name="email">Email address</string>
 	<string name="toast_empty_email">Email address is empty :(</string>
 	<string name="toast_backup_complete">Backup complete :)</string>
+	<string name="toast_backup_failed">Backup failed :(</string>
 
 	<string name="krw" translatable="false">KRW</string>
 	<string name="usd" translatable="false">USD</string>

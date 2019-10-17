@@ -10,12 +10,6 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.NotificationCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.ActionBar
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.GridLayoutManager
 import android.text.TextUtils
 import android.util.Log
 import android.view.MenuItem
@@ -23,6 +17,12 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import com.gmail.kamille1221.tripdiary.SpendUtils.CHANNEL_ID_UPLOAD
 import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_EXTERNAL_STORAGE
 import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_PERMISSION
@@ -65,11 +65,30 @@ class AddSpendActivity : AppCompatActivity() {
 
 		initRealm()
 
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-				ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION)
+		if (ContextCompat.checkSelfPermission(
+				this,
+				Manifest.permission.ACCESS_FINE_LOCATION
+			) != PackageManager.PERMISSION_GRANTED
+		) {
+			if (ActivityCompat.checkSelfPermission(
+					this,
+					Manifest.permission.WRITE_EXTERNAL_STORAGE
+				) != PackageManager.PERMISSION_GRANTED
+			) {
+				ActivityCompat.requestPermissions(
+					this,
+					arrayOf(
+						Manifest.permission.ACCESS_FINE_LOCATION,
+						Manifest.permission.WRITE_EXTERNAL_STORAGE
+					),
+					REQUEST_CODE_PERMISSION
+				)
 			} else {
-				ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_PERMISSION)
+				ActivityCompat.requestPermissions(
+					this,
+					arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+					REQUEST_CODE_PERMISSION
+				)
 			}
 		}
 
@@ -78,32 +97,56 @@ class AddSpendActivity : AppCompatActivity() {
 		actionBar?.setDisplayHomeAsUpEnabled(true)
 		actionBar?.setHomeButtonEnabled(true)
 
-		val mNotificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+		val mNotificationManager: NotificationManager =
+			getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			val channel = NotificationChannel(CHANNEL_ID_UPLOAD, getString(R.string.title_photo_upload), NotificationManager.IMPORTANCE_HIGH)
+			val channel = NotificationChannel(
+				CHANNEL_ID_UPLOAD,
+				getString(R.string.title_photo_upload),
+				NotificationManager.IMPORTANCE_HIGH
+			)
 			channel.setSound(null, null)
 			mNotificationManager.createNotificationChannel(channel)
 		}
-		val mBuilder: NotificationCompat.Builder = NotificationCompat.Builder(this, CHANNEL_ID_UPLOAD)
+		val mBuilder: NotificationCompat.Builder =
+			NotificationCompat.Builder(this, CHANNEL_ID_UPLOAD)
 
 		etDate.setText(SpendUtils.dateLongToString(date))
 		etDate.setOnClickListener {
 			val calendar: Calendar = Calendar.getInstance()
 			calendar.timeInMillis = date
-			val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-				val timePickerDialog = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-					calendar.set(year, month, dayOfMonth, hourOfDay, minute)
-					date = calendar.timeInMillis
-					etDate.setText(SpendUtils.dateLongToString(date))
-				}, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false)
-				timePickerDialog.show()
-			}, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+			val datePickerDialog = DatePickerDialog(
+				this,
+				DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+					val timePickerDialog = TimePickerDialog(
+						this,
+						TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+							calendar.set(year, month, dayOfMonth, hourOfDay, minute)
+							date = calendar.timeInMillis
+							etDate.setText(SpendUtils.dateLongToString(date))
+						},
+						calendar.get(Calendar.HOUR_OF_DAY),
+						calendar.get(Calendar.MINUTE),
+						false
+					)
+					timePickerDialog.show()
+				},
+				calendar.get(Calendar.YEAR),
+				calendar.get(Calendar.MONTH),
+				calendar.get(Calendar.DAY_OF_MONTH)
+			)
 			datePickerDialog.show()
 		}
-		spnCurrency.adapter = ArrayAdapter.createFromResource(this, R.array.currency, R.layout.spinner_item)
+		spnCurrency.adapter =
+			ArrayAdapter.createFromResource(this, R.array.currency, R.layout.spinner_item)
 		spnCurrency.setSelection(currency)
 		spnCurrency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-			override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+			override fun onItemSelected(
+				parent: AdapterView<*>,
+				view: View,
+				position: Int,
+				id: Long
+			) {
 				currency = position
 				SpendUtils.setLastCurrency(this@AddSpendActivity, position)
 			}
@@ -126,19 +169,46 @@ class AddSpendActivity : AppCompatActivity() {
 			val price: String = etPrice.text.toString()
 			when {
 				TextUtils.isEmpty(title) -> {
-					Toast.makeText(this, getString(R.string.toast_empty_title_or_price), Toast.LENGTH_SHORT).show()
+					Toast.makeText(
+						this,
+						getString(R.string.toast_empty_title_or_price),
+						Toast.LENGTH_SHORT
+					).show()
 					etTitle.requestFocus()
 				}
 				TextUtils.isEmpty(price) -> {
-					Toast.makeText(this, getString(R.string.toast_empty_title_or_price), Toast.LENGTH_SHORT).show()
+					Toast.makeText(
+						this,
+						getString(R.string.toast_empty_title_or_price),
+						Toast.LENGTH_SHORT
+					).show()
 					etPrice.requestFocus()
 				}
 				else -> {
 					val photoAdapter: PhotoAdapter = rvPhotos.adapter as PhotoAdapter
 					if (id < 0) {
-						id = commitRealm(title, content, date, SpendUtils.currencyPositionToString(this, currency), price.toInt(), lat, lng, RealmList())
+						id = commitRealm(
+							title,
+							content,
+							date,
+							SpendUtils.currencyPositionToString(this, currency),
+							price.toInt(),
+							lat,
+							lng,
+							RealmList()
+						)
 					} else {
-						updateRealm(id, title, content, date, SpendUtils.currencyPositionToString(this, currency), price.toInt(), lat, lng, RealmList())
+						updateRealm(
+							id,
+							title,
+							content,
+							date,
+							SpendUtils.currencyPositionToString(this, currency),
+							price.toInt(),
+							lat,
+							lng,
+							RealmList()
+						)
 					}
 					finish()
 					if (photoAdapter.getPhotos().isEmpty()) {
@@ -153,33 +223,52 @@ class AddSpendActivity : AppCompatActivity() {
 						mBuilder.setSmallIcon(R.drawable.ic_file_upload_black_24dp)
 						mBuilder.setSound(null)
 						mNotificationManager.notify(0, mBuilder.build())
-						val uploadList: ArrayList<String> = (rvPhotos.adapter as PhotoAdapter).getUploadList()
+						val uploadList: ArrayList<String> =
+							(rvPhotos.adapter as PhotoAdapter).getUploadList()
 						uploadList.forEach {
 							val index: Int = photos.indexOf(it)
 							val file = File(it)
 							val uri: Uri = Uri.fromFile(file)
-							val photoRef: StorageReference = mStorageRef.child("photos/${System.currentTimeMillis()}.${file.extension}")
+							val photoRef: StorageReference =
+								mStorageRef.child("photos/${System.currentTimeMillis()}.${file.extension}")
 							val uploadTask: UploadTask = photoRef.putFile(uri)
 							mBuilder.setProgress(100, 0, true)
 							mNotificationManager.notify(0, mBuilder.build())
 							uploadTask.addOnProgressListener {
-								Log.e("NotifyLog", "onProgress ::: $index ::: $uploadCount ::: ${uploadList.size}")
+								Log.e(
+									"NotifyLog",
+									"onProgress ::: $index ::: $uploadCount ::: ${uploadList.size}"
+								)
 							}
 							uploadTask.addOnFailureListener {
-								Toast.makeText(this, R.string.toast_photo_upload_failed, Toast.LENGTH_SHORT).show()
+								Toast.makeText(
+									this,
+									R.string.toast_photo_upload_failed,
+									Toast.LENGTH_SHORT
+								).show()
 							}
 							uploadTask.continueWithTask { task ->
 								if (!task.isSuccessful) {
-									Toast.makeText(this, R.string.toast_photo_upload_failed, Toast.LENGTH_SHORT).show()
+									Toast.makeText(
+										this,
+										R.string.toast_photo_upload_failed,
+										Toast.LENGTH_SHORT
+									).show()
 								}
 								photoRef.downloadUrl
 							}.addOnCompleteListener { task ->
 								if (task.isSuccessful) {
 									photos[index] = task.result.toString()
 									++uploadCount
-									Log.e("NotifyLog", "onComplete ::: $uploadCount ::: ${uploadList.size}")
+									Log.e(
+										"NotifyLog",
+										"onComplete ::: $uploadCount ::: ${uploadList.size}"
+									)
 									if (uploadCount == uploadList.size - 1) {
-										Log.e("NotifyLog", "onComplete ::: $uploadCount ::: ${uploadList.size}")
+										Log.e(
+											"NotifyLog",
+											"onComplete ::: $uploadCount ::: ${uploadList.size}"
+										)
 										mBuilder.setContentText(getString(R.string.text_photo_upload_complete))
 										mBuilder.setSmallIcon(R.drawable.ic_complete_black_24dp)
 										mBuilder.setProgress(0, 0, false)
@@ -188,11 +277,25 @@ class AddSpendActivity : AppCompatActivity() {
 										photos.forEach {
 											realmPhotos.add(it)
 										}
-										updateRealm(id, title, content, date, SpendUtils.currencyPositionToString(this, currency), price.toInt(), lat, lng, realmPhotos)
+										updateRealm(
+											id,
+											title,
+											content,
+											date,
+											SpendUtils.currencyPositionToString(this, currency),
+											price.toInt(),
+											lat,
+											lng,
+											realmPhotos
+										)
 										return@addOnCompleteListener
 									}
 								} else {
-									Toast.makeText(this, R.string.toast_photo_upload_failed, Toast.LENGTH_SHORT).show()
+									Toast.makeText(
+										this,
+										R.string.toast_photo_upload_failed,
+										Toast.LENGTH_SHORT
+									).show()
 								}
 							}
 						}
@@ -212,7 +315,8 @@ class AddSpendActivity : AppCompatActivity() {
 			deleteBuilder.setMessage(R.string.message_delete_spend)
 			deleteBuilder.setPositiveButton(R.string.delete) { _, _ ->
 				realm.beginTransaction()
-				val deleteResult: RealmResults<Spend> = realm.where(Spend::class.java).equalTo("id", id).findAll()
+				val deleteResult: RealmResults<Spend> =
+					realm.where(Spend::class.java).equalTo("id", id).findAll()
 				deleteResult.deleteAllFromRealm()
 				realm.commitTransaction()
 				finish()
@@ -229,7 +333,10 @@ class AddSpendActivity : AppCompatActivity() {
 			etContent.setText(bundle.getString("content"))
 			date = bundle.getLong("date")
 			etDate.setText(SpendUtils.dateLongToString(date))
-			currency = SpendUtils.currencyStringToPosition(this, bundle.getString("currency") ?: getString(R.string.krw))
+			currency = SpendUtils.currencyStringToPosition(
+				this,
+				bundle.getString("currency") ?: getString(R.string.krw)
+			)
 			spnCurrency.setSelection(currency)
 			etPrice.setText(bundle.getInt("price").toString())
 			lat = bundle.getDouble("lat")
@@ -261,7 +368,11 @@ class AddSpendActivity : AppCompatActivity() {
 		}
 	}
 
-	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+	override fun onRequestPermissionsResult(
+		requestCode: Int,
+		permissions: Array<out String>,
+		grantResults: IntArray
+	) {
 		if (requestCode == REQUEST_CODE_PERMISSION && permissions.isNotEmpty()) {
 			if ((permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) || (permissions[1] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
 				mapAsync()
@@ -276,8 +387,13 @@ class AddSpendActivity : AppCompatActivity() {
 	private fun mapAsync() {
 		mvLocation.getMapAsync { googleMap ->
 			val uiSettings: UiSettings = googleMap.uiSettings
-			if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-				val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+			if (ContextCompat.checkSelfPermission(
+					this,
+					Manifest.permission.ACCESS_FINE_LOCATION
+				) == PackageManager.PERMISSION_GRANTED
+			) {
+				val locationManager: LocationManager =
+					getSystemService(Context.LOCATION_SERVICE) as LocationManager
 				val providers: List<String> = locationManager.getProviders(true)
 				var location: Location? = null
 				providers.forEach {
@@ -319,7 +435,16 @@ class AddSpendActivity : AppCompatActivity() {
 	}
 
 	@Synchronized
-	private fun commitRealm(title: String, content: String, date: Long, currency: String, price: Int, lat: Double, lng: Double, photos: RealmList<String>): Int {
+	private fun commitRealm(
+		title: String,
+		content: String,
+		date: Long,
+		currency: String,
+		price: Int,
+		lat: Double,
+		lng: Double,
+		photos: RealmList<String>
+	): Int {
 		realm.beginTransaction()
 		val id: Int = realm.where(Spend::class.java).max("id")?.toInt() ?: 1
 		val spend = realm.createObject(Spend::class.java, id + 1)
@@ -337,7 +462,17 @@ class AddSpendActivity : AppCompatActivity() {
 	}
 
 	@Synchronized
-	private fun updateRealm(id: Int, title: String, content: String, date: Long, currency: String, price: Int, lat: Double, lng: Double, photos: RealmList<String>) {
+	private fun updateRealm(
+		id: Int,
+		title: String,
+		content: String,
+		date: Long,
+		currency: String,
+		price: Int,
+		lat: Double,
+		lng: Double,
+		photos: RealmList<String>
+	) {
 		realm.beginTransaction()
 		val spend: Spend? = realm.where(Spend::class.java).equalTo("id", id).findFirst()
 		if (spend != null) {

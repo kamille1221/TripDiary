@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.gmail.kamille1221.tripdiary.SpendUtils.REQUEST_CODE_MODIFY_SPEND
 import io.realm.OrderedRealmCollection
 import io.realm.Realm
@@ -19,7 +19,17 @@ import java.util.*
 /**
  * Created by Kamille on 2018-06-14.
  **/
-class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, private var realm: Realm, private val callback: RefreshTotalSpends, autoUpdate: Boolean = true): RealmRecyclerViewAdapter<Spend, RecyclerView.ViewHolder>(mContext, mSpends as OrderedRealmCollection<Spend>?, autoUpdate) {
+class SpendAdapter(
+	mContext: Context,
+	private var mSpends: RealmResults<Spend>,
+	private var realm: Realm,
+	private val callback: RefreshTotalSpends,
+	autoUpdate: Boolean = true
+) : RealmRecyclerViewAdapter<Spend, RecyclerView.ViewHolder>(
+	mContext,
+	mSpends as OrderedRealmCollection<Spend>?,
+	autoUpdate
+) {
 	override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 		val spend: Spend? = mSpends[position]
 		if (spend != null) {
@@ -32,7 +42,13 @@ class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, 
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-		return SpendHolder(LayoutInflater.from(parent.context).inflate(R.layout.card_spend, parent, false)).listen { position, _ ->
+		return SpendHolder(
+			LayoutInflater.from(parent.context).inflate(
+				R.layout.card_spend,
+				parent,
+				false
+			)
+		).listen { position, _ ->
 			val spend: Spend? = mSpends[position]
 			if (spend != null) {
 				showSpendDetail(spend)
@@ -40,7 +56,7 @@ class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, 
 		}
 	}
 
-	private fun <T: RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> Unit): T {
+	private fun <T : RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> Unit): T {
 		itemView.setOnClickListener {
 			event.invoke(adapterPosition, itemViewType)
 		}
@@ -62,13 +78,23 @@ class SpendAdapter(mContext: Context, private var mSpends: RealmResults<Spend>, 
 			photos.add(it)
 		}
 		bundle.putStringArrayList("photos", photos)
-		(context as Activity).startActivityForResult(Intent(context, AddSpendActivity::class.java).putExtras(bundle), REQUEST_CODE_MODIFY_SPEND)
+		(context as Activity).startActivityForResult(
+			Intent(
+				context,
+				AddSpendActivity::class.java
+			).putExtras(bundle), REQUEST_CODE_MODIFY_SPEND
+		)
 	}
 
-	inner class SpendHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+	inner class SpendHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 		fun bindSpend(spend: Spend) {
 			itemView.tvTitle.text = spend.title
-			itemView.tvPrice.text = String.format(Locale.getDefault(), "%s %s", SpendUtils.priceIntToString(spend.price), spend.currency)
+			itemView.tvPrice.text = String.format(
+				Locale.getDefault(),
+				"%s %s",
+				SpendUtils.priceIntToString(spend.price),
+				spend.currency
+			)
 			itemView.tvDate.text = SpendUtils.dateLongToString(spend.date)
 		}
 	}

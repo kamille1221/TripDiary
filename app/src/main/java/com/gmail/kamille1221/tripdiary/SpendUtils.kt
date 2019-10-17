@@ -55,7 +55,12 @@ object SpendUtils {
 	fun dateLongToString(date: Long): String {
 		val calendar: Calendar = Calendar.getInstance()
 		calendar.timeInMillis = date
-		val dateFormat = SimpleDateFormat(DateFormat.getBestDateTimePattern(Locale.getDefault(), "yyyy/MM/dd HH:mm"), Locale.getDefault())
+		val dateFormat = SimpleDateFormat(
+			DateFormat.getBestDateTimePattern(
+				Locale.getDefault(),
+				"yyyy/MM/dd HH:mm"
+			), Locale.getDefault()
+		)
 		return dateFormat.format(Date(calendar.timeInMillis))
 	}
 
@@ -70,7 +75,7 @@ object SpendUtils {
 
 	fun currencyStringToPosition(context: Context, currency: String): Int {
 		val currencyList: Array<out String> = context.resources.getStringArray(R.array.currency)
-		for (i in 0 until currencyList.size) {
+		for (i in currencyList.indices) {
 			if (currencyList[i] == currency) {
 				return i
 			}
@@ -78,7 +83,11 @@ object SpendUtils {
 		return -1
 	}
 
-	class VersionAsyncTask(private val packageManager: PackageManager, private val packageName: String, private val btnReference: WeakReference<Button>): AsyncTask<Void, Void, Boolean>() {
+	class VersionAsyncTask(
+		private val packageManager: PackageManager,
+		private val packageName: String,
+		private val btnReference: WeakReference<Button>
+	) : AsyncTask<Void, Void, Boolean>() {
 		private lateinit var current: String
 		private lateinit var store: String
 		override fun doInBackground(vararg params: Void?): Boolean {
