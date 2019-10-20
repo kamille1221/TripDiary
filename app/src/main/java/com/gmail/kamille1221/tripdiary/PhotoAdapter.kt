@@ -143,12 +143,12 @@ class PhotoAdapter(
 		if (data != null) {
 			val uri: Uri? = data.data
 			if (uri != null) {
-				val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media._ID)
+				val projection: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
 				val cursor: Cursor? =
-					context.contentResolver.query(uri, filePathColumn, null, null, null)
+					context.contentResolver.query(uri, projection, null, null, null)
 				if (cursor != null) {
 					cursor.moveToFirst()
-					val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
+					val columnIndex: Int = cursor.getColumnIndex(projection[0])
 					val photoPath: String = cursor.getString(columnIndex)
 					mPhotos.add(photoPath)
 					uploadList.add(photoPath)
