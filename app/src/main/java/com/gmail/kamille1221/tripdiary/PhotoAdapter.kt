@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -143,17 +144,23 @@ class PhotoAdapter(
 		if (data != null) {
 			val uri: Uri? = data.data
 			if (uri != null) {
-				val projection: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-				val cursor: Cursor? =
-					context.contentResolver.query(uri, projection, null, null, null)
-				if (cursor != null) {
-					cursor.moveToFirst()
-					val columnIndex: Int = cursor.getColumnIndex(projection[0])
-					val photoPath: String = cursor.getString(columnIndex)
-					mPhotos.add(photoPath)
-					uploadList.add(photoPath)
-					notifyDataSetChanged()
-					cursor.close()
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+					// TODO get file path for upload in Android Q
+					Toast.makeText(context, R.string.toast_photo_upload_failed, Toast.LENGTH_SHORT)
+						.show()
+				} else {
+					val projection: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
+					val cursor: Cursor? =
+						context.contentResolver.query(uri, projection, null, null, null)
+					if (cursor != null) {
+						cursor.moveToFirst()
+						val columnIndex: Int = cursor.getColumnIndex(projection[0])
+						val photoPath: String = cursor.getString(columnIndex)
+						mPhotos.add(photoPath)
+						uploadList.add(photoPath)
+						notifyDataSetChanged()
+						cursor.close()
+					}
 				}
 			}
 		}

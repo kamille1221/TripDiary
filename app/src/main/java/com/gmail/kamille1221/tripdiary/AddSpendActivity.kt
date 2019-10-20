@@ -264,7 +264,7 @@ class AddSpendActivity : AppCompatActivity() {
 										"NotifyLog",
 										"onComplete ::: $uploadCount ::: ${uploadList.size}"
 									)
-									if (uploadCount == uploadList.size - 1) {
+									if (uploadCount >= uploadList.size) {
 										Log.e(
 											"NotifyLog",
 											"onComplete ::: $uploadCount ::: ${uploadList.size}"
@@ -274,8 +274,8 @@ class AddSpendActivity : AppCompatActivity() {
 										mBuilder.setProgress(0, 0, false)
 										mNotificationManager.notify(0, mBuilder.build())
 										val realmPhotos: RealmList<String> = RealmList()
-										photos.forEach {
-											realmPhotos.add(it)
+										photos.forEach { photo ->
+											realmPhotos.add(photo)
 										}
 										updateRealm(
 											id,
