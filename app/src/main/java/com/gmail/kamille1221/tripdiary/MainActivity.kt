@@ -151,8 +151,8 @@ class MainActivity : AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 
 	private fun showTotalSpends(date: Long) {
 		var millis: Long = date
-		var dailyTotal = 0
-		val monthlyTotal: Int = getMonthlySpends(date)
+		var dailyTotal = 0.0
+		val monthlyTotal: Double = getMonthlySpends(date)
 		var currency: String =
 			SpendUtils.currencyPositionToString(this, SpendUtils.getLastCurrency(this))
 		if (millis < 0L) {
@@ -170,8 +170,8 @@ class MainActivity : AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 				Locale.getDefault(),
 				"%s %s / %s %s",
 				getString(R.string.total),
-				SpendUtils.priceIntToString(dailyTotal),
-				SpendUtils.priceIntToString(monthlyTotal),
+				SpendUtils.priceDoubleToString(dailyTotal),
+				SpendUtils.priceDoubleToString(monthlyTotal),
 				currency
 			)
 		}
@@ -194,10 +194,10 @@ class MainActivity : AppCompatActivity(), SpendAdapter.RefreshTotalSpends {
 			.lessThan("date", endMillis.timeInMillis).findAll().sort("date", Sort.ASCENDING)
 	}
 
-	private fun getMonthlySpends(date: Long): Int {
+	private fun getMonthlySpends(date: Long): Double {
 		val startMillis: Calendar = Calendar.getInstance()
 		val endMillis: Calendar = Calendar.getInstance()
-		var result = 0
+		var result = 0.0
 		startMillis.timeInMillis = date
 		startMillis.set(Calendar.DAY_OF_MONTH, 1)
 		startMillis.set(Calendar.HOUR_OF_DAY, 0)

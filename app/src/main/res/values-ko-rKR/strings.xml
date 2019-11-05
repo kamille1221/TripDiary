@@ -17,6 +17,8 @@
 	<string name="backup">백업</string>
 	<string name="restore">복원</string>
 	<string name="total">총</string>
+	<string name="cash">현금</string>
+	<string name="card">카드</string>
 	<string name="history_map">지출 장소</string>
 	<string name="open_source_license"><u>오픈 소스 라이선스</u></string>
 

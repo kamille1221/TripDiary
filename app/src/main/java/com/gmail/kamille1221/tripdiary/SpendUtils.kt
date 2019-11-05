@@ -64,8 +64,8 @@ object SpendUtils {
 		return dateFormat.format(Date(calendar.timeInMillis))
 	}
 
-	fun priceIntToString(price: Int): String {
-		val decimalFormat = DecimalFormat("###,###")
+	fun priceDoubleToString(price: Double): String {
+		val decimalFormat = DecimalFormat("###,###.##")
 		return decimalFormat.format(price)
 	}
 

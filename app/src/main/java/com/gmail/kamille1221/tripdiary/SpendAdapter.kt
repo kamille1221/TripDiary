@@ -70,7 +70,7 @@ class SpendAdapter(
 		bundle.putString("content", spend.content)
 		bundle.putLong("date", spend.date)
 		bundle.putString("currency", spend.currency)
-		bundle.putInt("price", spend.price)
+		bundle.putDouble("price", spend.price)
 		bundle.putDouble("lat", spend.lat)
 		bundle.putDouble("lng", spend.lng)
 		val photos: ArrayList<String> = ArrayList()
@@ -92,7 +92,7 @@ class SpendAdapter(
 			itemView.tvPrice.text = String.format(
 				Locale.getDefault(),
 				"%s %s",
-				SpendUtils.priceIntToString(spend.price),
+				SpendUtils.priceDoubleToString(spend.price),
 				spend.currency
 			)
 			itemView.tvDate.text = SpendUtils.dateLongToString(spend.date)

@@ -164,6 +164,7 @@ class AddSpendActivity : AppCompatActivity() {
 		mapAsync()
 
 		btnSave.setOnClickListener {
+			val isCash: Boolean = rbCash.isChecked
 			val title: String = etTitle.text.toString()
 			val content: String = etContent.text.toString()
 			val price: String = etPrice.text.toString()
@@ -188,23 +189,25 @@ class AddSpendActivity : AppCompatActivity() {
 					val photoAdapter: PhotoAdapter = rvPhotos.adapter as PhotoAdapter
 					if (id < 0) {
 						id = commitRealm(
+							isCash,
 							title,
 							content,
 							date,
 							SpendUtils.currencyPositionToString(this, currency),
-							price.toInt(),
+							price.toDouble(),
 							lat,
 							lng,
 							RealmList()
 						)
 					} else {
 						updateRealm(
+							isCash,
 							id,
 							title,
 							content,
 							date,
 							SpendUtils.currencyPositionToString(this, currency),
-							price.toInt(),
+							price.toDouble(),
 							lat,
 							lng,
 							RealmList()
@@ -278,12 +281,13 @@ class AddSpendActivity : AppCompatActivity() {
 											realmPhotos.add(photo)
 										}
 										updateRealm(
+											isCash,
 											id,
 											title,
 											content,
 											date,
 											SpendUtils.currencyPositionToString(this, currency),
-											price.toInt(),
+											price.toDouble(),
 											lat,
 											lng,
 											realmPhotos
@@ -338,7 +342,7 @@ class AddSpendActivity : AppCompatActivity() {
 				bundle.getString("currency") ?: getString(R.string.krw)
 			)
 			spnCurrency.setSelection(currency)
-			etPrice.setText(bundle.getInt("price").toString())
+			etPrice.setText(bundle.getDouble("price").toString())
 			lat = bundle.getDouble("lat")
 			lng = bundle.getDouble("lng")
 			val photos: RealmList<String> = RealmList()
@@ -436,11 +440,12 @@ class AddSpendActivity : AppCompatActivity() {
 
 	@Synchronized
 	private fun commitRealm(
+		isCash: Boolean,
 		title: String,
 		content: String,
 		date: Long,
 		currency: String,
-		price: Int,
+		price: Double,
 		lat: Double,
 		lng: Double,
 		photos: RealmList<String>
@@ -448,6 +453,7 @@ class AddSpendActivity : AppCompatActivity() {
 		realm.beginTransaction()
 		val id: Int = realm.where(Spend::class.java).max("id")?.toInt() ?: 1
 		val spend = realm.createObject(Spend::class.java, id + 1)
+		spend.isCash = isCash
 		spend.title = title
 		spend.content = content
 		spend.date = date
@@ -463,12 +469,13 @@ class AddSpendActivity : AppCompatActivity() {
 
 	@Synchronized
 	private fun updateRealm(
+		isCash: Boolean,
 		id: Int,
 		title: String,
 		content: String,
 		date: Long,
 		currency: String,
-		price: Int,
+		price: Double,
 		lat: Double,
 		lng: Double,
 		photos: RealmList<String>
@@ -476,6 +483,7 @@ class AddSpendActivity : AppCompatActivity() {
 		realm.beginTransaction()
 		val spend: Spend? = realm.where(Spend::class.java).equalTo("id", id).findFirst()
 		if (spend != null) {
+			spend.isCash = isCash
 			spend.title = title
 			spend.content = content
 			spend.date = date

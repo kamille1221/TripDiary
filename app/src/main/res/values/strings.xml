@@ -17,6 +17,8 @@
 	<string name="backup">Backup</string>
 	<string name="restore">Restore</string>
 	<string name="total">Total</string>
+	<string name="cash">Cash</string>
+	<string name="card">Card</string>
 	<string name="history_map">History Map</string>
 	<string name="open_source_license"><u>OpenSource License</u></string>
 
